@@ -3,8 +3,8 @@ import styled from "styled-components";
 import moment from "moment";
 
 const Post = ({ post }) => {
-    const handleLike = () => {
-        
+    const handleLike = (id) => {
+        console.log(id)
     }
     const handleComment = () => {
 
@@ -24,7 +24,7 @@ const Post = ({ post }) => {
         <p>{post.body}</p>
       </div>
       <div className='comment'>
-        <span onClick={handleLike}>
+        <span onClick={() => handleLike(post.id)}>
           <i className='fas fa-heart'></i> {post.likeCount}
         </span>
         <span onClick={handleComment}><i className='fas fa-comments'></i> {post.commentCount}</span>
@@ -36,8 +36,9 @@ const Post = ({ post }) => {
 const SubGrid = styled.div`
   padding: 2%;
   border-radius: 5px;
-  border: 1px solid #999;
-  margin: 1% 0;
+  border: 0.3px solid #999;
+  box-shadow: 0 2px 25px #eee;
+  margin: 0.5% 0;
   .user {
     display: flex;
     padding-bottom: 1rem;
