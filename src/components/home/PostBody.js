@@ -25,7 +25,7 @@ const PostBody = () => {
 };
 
 const GET_POSTs = gql`
-  {
+  query contacts {
     getPosts {
       id
       body

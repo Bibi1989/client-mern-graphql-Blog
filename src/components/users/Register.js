@@ -4,8 +4,10 @@ import gql from "graphql-tag";
 import { useMutation } from "@apollo/react-hooks";
 import { useHistory } from "react-router-dom";
 import { AuthContext } from "../context/AuthProvider";
+import { session } from "../utils/session";
 
 const Register = () => {
+  const [register, { loading }] = useMutation(REGISTER_USER);
   const history = useHistory();
   const { logins } = useContext(AuthContext);
   const [error, setErrors] = useState({});
@@ -22,23 +24,36 @@ const Register = () => {
     setForm({ ...form, [name]: value });
   };
 
-  const [register, { loading }] = useMutation(REGISTER_USER, {
-    update(_, result) {
-      const { login: data } = result.data;
-      logins(data);
-      history.push("/");
-    },
-    onError(err) {
-      console.log(err);
-      setErrors(err.graphQLErrors[0].extensions.exception.error);
-    },
-    variables: form
-  });
+  // const [register, { loading }] = useMutation(REGISTER_USER, {
+  //   update(_, result) {
+  //     const { login: data } = result.data;
+  //     logins(data);
+  //     history.push("/");
+  //   },
+  //   onError(err) {
+  //     console.log(err);
+  //     setErrors(err.graphQLErrors[0].extensions.exception.error);
+  //   },
+  //   variables: form
+  // });
 
   const handleRegister = event => {
     event.preventDefault();
     if (loading) return "loading...";
     register();
+    register({
+      variables: form
+    })
+      .then(response => {
+        logins(response.data.register);
+        sessionStorage.setItem("auth", JSON.stringify(response.data.register));
+      })
+      .then(() => {
+        history.push("/");
+      })
+      .catch(err => {
+        setErrors(err.graphQLErrors[0].extensions.exception.error);
+      });
 
     setForm({
       username: "",
@@ -47,6 +62,8 @@ const Register = () => {
       confirmPassword: ""
     });
   };
+
+  session(history);
 
   return (
     <Form error={error}>

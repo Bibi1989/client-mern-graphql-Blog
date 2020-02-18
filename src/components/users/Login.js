@@ -5,10 +5,12 @@ import { useMutation } from "@apollo/react-hooks";
 import { useHistory } from "react-router-dom";
 import logo from "../../logo.svg";
 import { AuthContext } from "../context/AuthProvider";
+import { session } from "../utils/session";
 
 const Login = () => {
   const history = useHistory();
   const { logins } = useContext(AuthContext);
+  const [login, { loading }] = useMutation(LOGIN_USER);
   const [error, setErrors] = useState({});
   const [form, setForm] = useState({
     email: "",
@@ -21,29 +23,48 @@ const Login = () => {
     setForm({ ...form, [name]: value });
   };
 
-  const [login, { loading }] = useMutation(LOGIN_USER, {
-    update(_, result) {
-      const { login: data } = result.data;
-      logins(data);
-      sessionStorage.setItem("auth", JSON.stringify(data));
-      history.push("/");
-    },
-    onError(err) {
-      console.log(err);
-      setErrors(err.graphQLErrors[0].extensions.exception.error);
-    },
-    variables: form
-  });
+  // const [login, { loading }] = useMutation(LOGIN_USER, {
+  //   update(_, result) {
+  //     const { login: data } = result.data;
+  //     logins(data);
+  //     sessionStorage.setItem("auth", JSON.stringify(data));
+  //     history.push("/");
+  //   },
+  //   onError(err) {
+  //     console.log(err);
+  //     setErrors(err.graphQLErrors[0].extensions.exception.error);
+  //   },
+  //   variables: form
+  // });
 
   const handleLogin = event => {
     event.preventDefault();
-    login();
-    if (loading) return "loading...";
+    login({
+      variables: {
+        ...form
+      }
+    })
+      .then(res => {
+        logins(res.data.login);
+        sessionStorage.setItem("auth", JSON.stringify(res.data.login));
+      })
+      .then(() => {
+        history.push("/");
+      })
+      .catch(err => {
+        setErrors(err.graphQLErrors[0].extensions.exception.error);
+      });
     setForm({
       email: "",
       password: ""
     });
   };
+
+  session(history);
+
+  // if (sessionStorage.getItem("auth")) {
+  //   history.push("/");
+  // }
 
   return (
     <Form error={error}>
@@ -147,7 +168,7 @@ const Form = styled.div`
         border: 0.4px solid #eee;
         box-shadow: 0 3px 15px #eee;
 
-        &input:focus {
+        &:focus {
           background: #f1f1f1;
         }
       }

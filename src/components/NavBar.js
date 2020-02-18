@@ -10,7 +10,7 @@ const activeBorder = {
 
 const NavBar = () => {
   const token = sessionStorage.getItem("auth");
-  const { logout, user } = useContext(AuthContext);
+  const { logout } = useContext(AuthContext);
   const path = useLocation();
   const [active, setActive] = useState({
     home: true,

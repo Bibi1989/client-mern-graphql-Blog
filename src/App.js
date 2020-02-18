@@ -6,6 +6,7 @@ import Register from "./components/users/Register";
 import Home from "./components/home/Home";
 import NotFound from "./components/users/NotFound";
 import NavBar from "./components/NavBar";
+// import PrivateRoute from "./components/privateRoute/privateRoute";
 
 function App() {
   return (
