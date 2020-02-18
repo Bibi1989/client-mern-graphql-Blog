@@ -6,8 +6,8 @@ const PostForm = () => {
     <Form>
       <form>
         <div className='input-group'>
-        <i class="fas fa-blog icon"></i>
-          <input type='text' placeholder="What is on your mind!!!" />
+          <i className='fas fa-blog icon'></i>
+          <input type='text' placeholder='What is on your mind!!!' />
         </div>
       </form>
     </Form>
@@ -22,12 +22,12 @@ const Form = styled.div`
       width: 100%;
       display: flex;
       position: relative;
-      .icon{
-          font-size: 2.5rem;
-          position: absolute;
-          top: 25%;
-          left: 1%;
-          color: #4267B2;
+      .icon {
+        font-size: 2.5rem;
+        position: absolute;
+        top: 25%;
+        left: 1%;
+        color: #4267b2;
       }
       input {
         width: 100%;
@@ -37,7 +37,6 @@ const Form = styled.div`
         box-shadow: 0 5px 25px #eee;
         font-size: 1.5rem;
         outline: none;
-        
       }
     }
   }

@@ -3,12 +3,10 @@ import styled from "styled-components";
 import moment from "moment";
 
 const Post = ({ post }) => {
-    const handleLike = (id) => {
-        console.log(id)
-    }
-    const handleComment = () => {
-
-    }
+  const handleLike = id => {
+    console.log(id);
+  };
+  const handleComment = () => {};
   return (
     <SubGrid key={post.id}>
       <div className='user'>
@@ -16,7 +14,10 @@ const Post = ({ post }) => {
         <div>
           <p>{post.username}</p>
           <p className='date'>
-              <p>{moment(post.createdAt).fromNow(true)} <i className='fas fa-users'></i></p>
+            <span>
+              {moment(post.createdAt).fromNow(true)}{" "}
+              <i className='fas fa-users'></i>
+            </span>
           </p>
         </div>
       </div>
@@ -27,7 +28,9 @@ const Post = ({ post }) => {
         <span onClick={() => handleLike(post.id)}>
           <i className='fas fa-heart'></i> {post.likeCount}
         </span>
-        <span onClick={handleComment}><i className='fas fa-comments'></i> {post.commentCount}</span>
+        <span onClick={handleComment}>
+          <i className='fas fa-comments'></i> {post.commentCount}
+        </span>
       </div>
     </SubGrid>
   );

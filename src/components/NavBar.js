@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
+import { AuthContext } from "./context/AuthProvider";
 
 const activeBorder = {
   color: "teal",
@@ -8,52 +9,61 @@ const activeBorder = {
 };
 
 const NavBar = () => {
+  const token = sessionStorage.getItem("auth");
+  const { logout, user } = useContext(AuthContext);
   const path = useLocation();
   const [active, setActive] = useState({
     home: true,
     login: false,
-    register: false
+    register: false,
+    logouts: false
   });
   const handleClick = link => {
     if (link === "home") {
       setActive({
         home: true,
         login: false,
-        register: false
+        register: false,
+        logouts: false
       });
     } else if (link === "login") {
       setActive({
         home: false,
         login: true,
-        register: false
+        register: false,
+        logouts: false
       });
     } else if (link === "register") {
       setActive({
         home: false,
         login: false,
-        register: true
+        register: true,
+        logouts: false
       });
     }
   };
 
   const urlCheck = () => {
-    if (path.pathname === "/") {
+    if (path.pathname === "/" || path.pathname === "") {
       setActive({
         home: true,
         login: false,
-        register: false
+        register: false,
+        logouts: false
       });
     } else if (path.pathname === "/login") {
       setActive({
         home: false,
         login: true,
-        register: false
+        register: false,
+        logouts: false
       });
     } else if (path.pathname === "/register") {
       setActive({
         home: false,
         login: false,
-        register: true
+        register: true,
+        logouts: false
       });
     }
   };
@@ -61,6 +71,20 @@ const NavBar = () => {
     urlCheck();
     // eslint-disable-next-line
   }, []);
+
+  const handleLogout = () => {
+    logout();
+    sessionStorage.removeItem("auth");
+    setActive({
+      home: false,
+      login: false,
+      register: false,
+      logouts: true
+    });
+  };
+
+  //   const getToken = sessionStorage.getItem("auth")
+  const getToken = JSON.parse(token);
 
   return (
     <div>
@@ -72,28 +96,48 @@ const NavBar = () => {
               className='links'
               style={active.home ? activeBorder : {}}
             >
-              Home
+              {token
+                ? getToken.username === undefined ||
+                  `${getToken.username[0].toUpperCase()}${getToken.username.slice(
+                    1
+                  )}`
+                : "Home"}
             </Link>
           </li>
           <div>
-            <li onClick={() => handleClick("login")}>
-              <Link
-                to='/login'
-                className='links'
-                style={active.login ? activeBorder : {}}
-              >
-                Login
-              </Link>
-            </li>
-            <li onClick={() => handleClick("register")}>
-              <Link
-                to='/register'
-                className='links'
-                style={active.register ? activeBorder : {}}
-              >
-                Register
-              </Link>
-            </li>
+            {!getToken && (
+              <>
+                <li onClick={() => handleClick("login")}>
+                  <Link
+                    to='/login'
+                    className='links'
+                    style={active.login ? activeBorder : {}}
+                  >
+                    Login
+                  </Link>
+                </li>
+                <li onClick={() => handleClick("register")}>
+                  <Link
+                    to='/register'
+                    className='links'
+                    style={active.register ? activeBorder : {}}
+                  >
+                    Register
+                  </Link>
+                </li>
+              </>
+            )}
+            {getToken && (
+              <li onClick={() => handleLogout()}>
+                <Link
+                  to='/login'
+                  className='links'
+                  style={active.logouts ? activeBorder : {}}
+                >
+                  Logout
+                </Link>
+              </li>
+            )}
           </div>
         </ul>
       </Nav>
