@@ -1,13 +1,59 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
+import { useMutation } from "@apollo/react-hooks";
+import { GET_POSTS, CREATE_POST } from "../queries/query";
 
 const PostForm = () => {
+  const [form, setForm] = useState({
+    body: ""
+  });
+  const [createPost] = useMutation(CREATE_POST, {
+    variables: form,
+    update(proxy, result) {
+      const posts = proxy.readQuery({
+        query: GET_POSTS
+      });
+      console.log(posts);
+      console.log("res", result);
+      posts.getPosts = [result.data.createPost, ...posts.getPosts];
+      proxy.writeQuery({
+        query: GET_POSTS,
+        posts: {
+          getPosts: [result.data.createPost, ...posts.getPosts]
+        }
+      });
+      form.body = "";
+    },
+    onError(err) {
+      console.log(err.message);
+    }
+  });
+  console.log(form);
+
+  const handleInput = e => {
+    const { value, name } = e.target;
+    setForm({
+      ...form,
+      [name]: value
+    });
+  };
+
+  const handlePosts = e => {
+    e.preventDefault();
+    createPost();
+  };
+
   return (
     <Form>
-      <form>
+      <form onSubmit={handlePosts}>
         <div className='input-group'>
           <i className='fas fa-blog icon'></i>
-          <input type='text' placeholder='What is on your mind!!!' />
+          <input
+            type='text'
+            name='body'
+            placeholder='What is on your mind!!!'
+            onChange={handleInput}
+          />
         </div>
       </form>
     </Form>

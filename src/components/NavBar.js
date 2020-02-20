@@ -10,7 +10,7 @@ const activeBorder = {
 
 const NavBar = () => {
   const token = sessionStorage.getItem("auth");
-  const { logout } = useContext(AuthContext);
+  const { logout, user } = useContext(AuthContext);
   const path = useLocation();
   const [active, setActive] = useState({
     home: true,
@@ -74,7 +74,6 @@ const NavBar = () => {
 
   const handleLogout = () => {
     logout();
-    sessionStorage.removeItem("auth");
     setActive({
       home: false,
       login: false,
@@ -83,29 +82,33 @@ const NavBar = () => {
     });
   };
 
-  //   const getToken = sessionStorage.getItem("auth")
-  const getToken = JSON.parse(token);
-
   return (
     <div>
       <Nav>
         <ul>
           <li onClick={() => handleClick("home")}>
-            <Link
-              to='/'
-              className='links'
-              style={active.home ? activeBorder : {}}
-            >
-              {token
-                ? getToken.username === undefined ||
-                  `${getToken.username[0].toUpperCase()}${getToken.username.slice(
-                    1
-                  )}`
-                : "Home"}
-            </Link>
+            {token ? (
+              <Link
+                to='/'
+                className='links'
+                style={active.home ? activeBorder : {}}
+              >
+                {user.username === undefined ||
+                  `${user.username[0].toUpperCase()}${user.username.slice(1)}`}
+              </Link>
+            ) : (
+              <Link
+                to='/login'
+                className='links'
+                style={active.home ? activeBorder : {}}
+              >
+                Home
+              </Link>
+            )}
           </li>
+
           <div>
-            {!getToken && (
+            {!user && (
               <>
                 <li onClick={() => handleClick("login")}>
                   <Link
@@ -127,7 +130,7 @@ const NavBar = () => {
                 </li>
               </>
             )}
-            {getToken && (
+            {user && (
               <li onClick={() => handleLogout()}>
                 <Link
                   to='/login'
